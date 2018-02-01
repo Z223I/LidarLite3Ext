@@ -15,6 +15,14 @@ import pdb
 class LidarLite3Ext(Lidar_Lite):
   'LidarLite3Ext documentation'
 
+  DEFAULT = 0
+  SHORT_RANGE = 1
+  DEFAULT_RANGE = 2
+  MAXIMUM_RANGE = 3
+  HIGH_SENSITIVITY = 4
+  LOW_SENSITIVITY = 5
+  ADDRESS = 6 * 16 + 2 # x62
+
   def __init__(self):
     super( LidarLite3Ext, self ).__init__()
 #    print ("LidarLite3Ext constructor")
