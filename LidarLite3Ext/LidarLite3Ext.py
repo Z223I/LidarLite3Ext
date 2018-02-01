@@ -1,4 +1,5 @@
-
+import sys
+sys.path.append("/home/pi/pythondev/Lidar-Lite/python")
 # This is the threaded version.
 
 
@@ -25,10 +26,10 @@ class LidarLite3Ext(Lidar_Lite):
 #    pdb.set_trace()
     connected = self.connect(1)
 
-    print("Connected = ", connected)
+#    print("Connected = ", connected)
 
     if connected >= 0:
-      print ("Lidar connected")
+#      print ("Lidar connected")
 
       try:
         self.writeAndWait( 0x04, 0x0A )
