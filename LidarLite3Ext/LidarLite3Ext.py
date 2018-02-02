@@ -65,6 +65,24 @@ class LidarLite3Ext(Lidar_Lite):
   def terminate(self):
     self._running = False
   
+  def auto_configure(self, distance_inches):
+        """auto_configure configures the Lidar based on target range."""
+        INCHES_PER_FOOT = 12
+        if distance_inches < 25 * INCHES_PER_FOOT:
+            # Short range
+            self.configure(LidarLite3Ext.SHORT_RANGE, LidarLite3Ext.ADDRESS)
+        elif distance_inches > 80 * INCHES_PER_FOOT:
+            # Maximum range
+            self.configure(LidarLite3Ext.MAXIMUM_RANGE, LidarLite3Ext.ADDRESS)
+            configuration = LidarLite3Ext.MAXIMUM_RANGE
+        else:
+            # Default range
+            self.configure(LidarLite3Ext.DEFAULT_RANGE, LidarLite3Ext.ADDRESS)
+            configuration = LidarLite3Ext.DEFAULT_RANGE
+
+        return configuration
+
+
   def run(self, _qDistance):
     xRange = []
     maxItemsInQueue = 1
