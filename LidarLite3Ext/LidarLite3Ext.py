@@ -13,7 +13,7 @@ import pdb
 
 
 class LidarLite3Ext(Lidar_Lite):
-  'LidarLite3Ext documentation'
+  """LidarLite3Ext documentation"""
 
   DEFAULT = 0
   SHORT_RANGE = 1
@@ -23,11 +23,17 @@ class LidarLite3Ext(Lidar_Lite):
   LOW_SENSITIVITY = 5
   ADDRESS = 6 * 16 + 2 # x62
 
+  INCHES_PER_METER = 39.3701
+  MAX_TGT_RANGE_M = 40
+  MAX_TGT_RANGE_IN = MAX_TGT_RANGE_M * INCHES_PER_METER
+
   def __init__(self):
     super( LidarLite3Ext, self ).__init__()
 #    print ("LidarLite3Ext constructor")
     self._running = True
     self.simulatedData = False
+    self.bias_count = 0
+
 
   def init(self):
 
@@ -56,6 +62,17 @@ class LidarLite3Ext(Lidar_Lite):
       return False
 
   def read(self):
+        """Receiver bias correction must be performed periodically. 
+        (e.g. 1 out of every 100 readings)."""
+
+        self.bias_count += 1
+        if self.bias_count == 100:
+            self.write_ext(0x00, 0x04, 0x62)
+            self.bias_count = 0
+        else:
+            self.write_ext(0x00, 0x03, 0x62)
+            self.bias_count += 1
+            
         # Read current range.
         distance_cm = self.getDistance()
         distance_inch = distance_cm / 2.54
@@ -71,6 +88,7 @@ class LidarLite3Ext(Lidar_Lite):
         if distance_inches < 25 * INCHES_PER_FOOT:
             # Short range
             self.configure(LidarLite3Ext.SHORT_RANGE, LidarLite3Ext.ADDRESS)
+            configuration = LidarLite3Ext.SHORT_RANGE
         elif distance_inches > 80 * INCHES_PER_FOOT:
             # Maximum range
             self.configure(LidarLite3Ext.MAXIMUM_RANGE, LidarLite3Ext.ADDRESS)
@@ -94,8 +112,7 @@ class LidarLite3Ext(Lidar_Lite):
         distanceCM = 25.4
         distanceInch = distanceCM / 2.54
       else:
-        distanceCM = self.getDistance()
-        distanceInch = distanceCM / 2.54
+        distanceInch = self.read()
 
 #      print "Inches:  ", distanceInch
 
@@ -123,6 +140,7 @@ class LidarLite3Ext(Lidar_Lite):
 
   def write_ext(self, register, value, lidarliteAddress):
       self.address = lidarliteAddress
+#      super( LidarLite3Ext, self ).writeAndWait(register, value)
       self.writeAndWait(register, value)
 
 
