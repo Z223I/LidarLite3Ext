@@ -136,7 +136,7 @@ class LidarLite3Ext(Lidar_Lite):
  
     #print "Inches per minute: ", velocityInchesPerMinute 
 
-      time.sleep(2.5)
+      time.sleep(0.01)
 
   def write_ext(self, register, value, lidarliteAddress):
       self.address = lidarliteAddress
